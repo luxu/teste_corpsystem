@@ -11,7 +11,7 @@ services:
 
   app:
     build: .
-    image: devpro-rest:dev
+    image: corpsystem-rest:dev
     env_file: .env
     depends_on:
       - mysql
