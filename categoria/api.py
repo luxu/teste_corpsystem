@@ -15,6 +15,7 @@ def categorias(request):
         status=status.HTTP_200_OK
     )
 
+
 @api_view(['POST'])
 def criar_categoria(request):
     serializer = serializers.CategoriaCriarSerializer(data=request.data)
@@ -22,6 +23,7 @@ def criar_categoria(request):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['PUT'])
 def atualizar_categoria(request, id):
@@ -42,6 +44,8 @@ def atualizar_categoria(request, id):
             status=status.HTTP_404_NOT_FOUND
         )
         return result
+
+
 @api_view(['DELETE'])
 def deletar_categoria(request, id):
     if id is None:
