@@ -15,6 +15,15 @@ def categorias(request):
         status=status.HTTP_200_OK
     )
 
+@api_view(['GET'])
+def categoria_por_id(request, id):
+    vendas = Categoria.objects.filter(id=id)
+    serializer = serializers.CategoriaSerializer(vendas, many=True)
+    return Response(
+        serializer.data,
+        status=status.HTTP_200_OK
+    )
+
 
 @api_view(['POST'])
 def criar_categoria(request):
