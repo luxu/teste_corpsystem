@@ -5,9 +5,6 @@ from vendedor.models import Vendedor
 
 
 class Venda(models.Model):
-    venda_numero = models.IntegerField(
-        unique=True,
-    )
     vendedor = models.ForeignKey(
         Vendedor,
         related_name='vendedor_venda',
@@ -26,4 +23,4 @@ class Venda(models.Model):
     data_venda = models.DateTimeField()
 
     def __str__(self):
-        return f'{self.venda_numero} - {self.data_venda}'
+        return f'{self.id} - {self.data_venda}'

@@ -3,7 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 .idea
-
+.pdf
+.xlsx
+.xls
+media/*.xlsx
+media/*.pdf
 
 # C extensions
 *.so

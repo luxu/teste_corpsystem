@@ -1,9 +1,10 @@
 from rest_framework import serializers
 
-from .models import Venda
 from categoria.models import Categoria
 from itens_venda.models import ItensVenda
 from produto.models import Produto
+from .models import Venda
+
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,9 +30,9 @@ class VendaSerializer(serializers.ModelSerializer):
         model = Venda
         fields = (
             'id',
-            'venda_numero',
             'total_a_pagar',
             'vendedor',
+            'cliente',
             'data_venda',
         )
 
@@ -39,9 +40,22 @@ class VendaCriarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Venda
         fields = (
-            'venda_numero',
             'total_a_pagar',
+            'cliente',
             'vendedor',
+            'cliente',
+            'data_venda',
+        )
+
+class VendaAtualizarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Venda
+        fields = (
+            'id',
+            'total_a_pagar',
+            'cliente',
+            'vendedor',
+            'cliente',
             'data_venda',
         )
 
