@@ -13,6 +13,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from itens_venda.models import ItensVenda
 from . import serializers
 from .models import Venda
 
@@ -25,6 +26,13 @@ def vendas(request):
         serializer.data,
         status=status.HTTP_200_OK
     )
+
+
+@api_view(['GET'])
+def listar_vendas(request):
+    vendas = ItensVenda.objects.all().prefetch_related('vendas').values()
+    serializer = serializers.VendaSerializer(vendas, many=True)
+    return Response(serializer.data)
 
 
 @api_view(['POST'])
