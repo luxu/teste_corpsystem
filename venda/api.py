@@ -30,7 +30,7 @@ def vendas(request):
 
 @api_view(['GET'])
 def listar_vendas(request):
-    vendas = ItensVenda.objects.all().prefetch_related('vendas').values()
+    vendas = Venda.objects.all()
     serializer = serializers.VendaSerializer(vendas, many=True)
     return Response(serializer.data)
 
@@ -85,7 +85,23 @@ def deletar_venda(request, id):
 
 
 @api_view(['GET'])
-def vendas_efetuadas(request):
+def vendas_efetuadas_pdf(request):
+    # A lógica é gerar as VENDAS que tenham sido pagas, ou seja, tiver vendas em aberto NÃO entra no relatório
+    vendas = Venda.objects.filter(total_a_pagar__gt=0)
+    if data_venda := request.GET.get('data_venda'):
+        vendas = vendas.filter(data_venda__gt=data_venda)
+    if vendedor := request.GET.get('vendedor'):
+        vendas = vendas.filter(vendedor=vendedor)
+    if cliente := request.GET.get('cliente'):
+        vendas = vendas.filter(cliente=cliente)
+
+    nome_arquivo_pdf = gerar_nota_fiscal_pdf(vendas)
+    with open(nome_arquivo_pdf, 'rb') as pdf:
+        response = HttpResponse(pdf.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename={os.path.basename(nome_arquivo_pdf)}'
+        return response
+
+def vendas_efetuadas_excel(request):
     # A lógica é gerar as VENDAS que tenham sido pagas, ou seja, tiver vendas em aberto NÃO entra no relatório
     vendas = Venda.objects.filter(total_a_pagar__gt=0)
     if data_venda := request.GET.get('data_venda'):
@@ -102,13 +118,7 @@ def vendas_efetuadas(request):
             content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         )
         response['Content-Disposition'] = f'attachment; filename={os.path.basename(nome_arquivo_excel)}'
-
-    nome_arquivo_pdf = gerar_nota_fiscal_pdf(vendas)
-    with open(nome_arquivo_pdf, 'rb') as pdf:
-        response = HttpResponse(pdf.read(), content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename={os.path.basename(nome_arquivo_pdf)}'
         return response
-
 
 def gerar_nota_fiscal_excel(vendas):
     wb = openpyxl.Workbook()
@@ -160,14 +170,13 @@ def gerar_nota_fiscal_excel(vendas):
         linha_inicial += 2
 
 
-    nome_arquivo = f'media/NF_nro_{nro_nota}.xlsx'
+    nome_arquivo = f'media/nota_fiscal_vendas.xlsx'
     wb.save(nome_arquivo)
 
     return nome_arquivo
 
 
 def gerar_nota_fiscal_pdf(vendas):
-    # nome_arquivo = f'media/NF_nro_{vendas.values("id").first()}.pdf'
     nome_arquivo = 'media/nota_fiscal_vendas.pdf'
     pdf = SimpleDocTemplate(nome_arquivo, pagesize=A4)
     elementos = []
