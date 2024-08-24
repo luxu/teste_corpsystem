@@ -8,7 +8,9 @@ services:
       - ./staticfiles:/app/staticfiles
     depends_on:
       - app
-
+    extra_hosts:
+      host.docker.internal: host-gateway
+      
   app:
     build: .
     image: corpsystem-rest:dev
